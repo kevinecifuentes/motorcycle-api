@@ -9,8 +9,11 @@ exports.findAllUsers = async (req, res) => {
       },
     })
 
+    const result = users.length
+
     res.status(200).json({
       status: 'succes',
+      result,
       users,
     })
   } catch (error) {
@@ -32,7 +35,6 @@ exports.findUser = async (req, res) => {
     return res.status(200).json({
       status: 'succes',
       message: `User with id ${id} found`,
-      id,
       user,
     })
   } catch (error) {
@@ -56,12 +58,9 @@ exports.createUser = async (req, res) => {
       role,
     })
 
-    if (email) {
-    }
-
     res.status(200).json({
       status: 'succes',
-      message: `new user with name ${name} created`,
+      message: `new user ${name} created`,
       user,
     })
   } catch (error) {
@@ -82,7 +81,14 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { user } = req
-    const { name, email } = req.body
+    const { name, email, role } = req.body
+
+    if (role) {
+      return res.status(400).json({
+        status: 'invalid',
+        message: 'role cannot be changed',
+      })
+    }
 
     await user.update({ name, email })
 

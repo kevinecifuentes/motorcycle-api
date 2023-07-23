@@ -1,28 +1,26 @@
 const { DataTypes } = require('sequelize')
 const { db } = require('./../database/config')
-const { now } = require('sequelize/types/utils')
 
 const Repair = db.define('repairs', {
   id: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
     allowNull: false,
     primaryKey: true,
+    autoIncrement: true,
   },
   date: {
-    type: DataTypes.DATE,
+    type: DataTypes.DATEONLY,
     allowNull: false,
-    defaultValue: now,
-  },
-  userId: {
-    defaultValue: null,
-    allowNull: true,
-    field: 'user_id',
   },
   status: {
     type: DataTypes.ENUM('pending', 'cancelled', 'completed'),
     allowNull: false,
     defaultValue: 'pending',
+  },
+  userid: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    field: 'user_id',
   },
 })
 
