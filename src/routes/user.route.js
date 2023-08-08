@@ -6,11 +6,12 @@ const userController = require('./../controllers/user.controllers')
 
 // middleware
 const userMiddleware = require('./../middlewares/user.middleware')
+const validationMiddleware = require('./../middlewares/validation.middleware')
 
 router
   .route('/')
   .get(userController.findAllUsers)
-  .post(userController.createUser)
+  .post(validationMiddleware.userValidation, userController.createUser)
 
 router
   .route('/:id')

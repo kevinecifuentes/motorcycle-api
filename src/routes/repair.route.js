@@ -6,11 +6,12 @@ const repairControllers = require('./../controllers/repair.controllers')
 
 //middlewares
 const repairMiddleware = require('../middlewares/repair.middleware')
+const validationMiddleware = require('./../middlewares/validation.middleware')
 
 router
   .route('/')
   .get(repairControllers.findAllRepairs)
-  .post(repairControllers.createRepair)
+  .post(validationMiddleware.repairValidation, repairControllers.createRepair)
 
 router
   .route('/:id')
