@@ -7,11 +7,18 @@ const userController = require('./../controllers/user.controllers')
 // middleware
 const userMiddleware = require('./../middlewares/user.middleware')
 const validationMiddleware = require('./../middlewares/validation.middleware')
+const authController = require('./../controllers/authContoller')
+const authMiddlewares = require('./../middlewares/auth.middlewares')
 
 router
   .route('/')
-  .get(userController.findAllUsers)
   .post(validationMiddleware.userValidation, userController.createUser)
+
+router.route('/login').post(authController.signIn)
+
+router.use(authMiddlewares.protect)
+
+router.route('/').get(userController.findAllUsers)
 
 router
   .route('/:id')
