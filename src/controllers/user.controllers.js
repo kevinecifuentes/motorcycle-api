@@ -9,6 +9,9 @@ exports.findAllUsers = async (req, res) => {
       where: {
         status: 'available',
       },
+      attributes: {
+        exclude: ['password'],
+      },
     })
 
     const result = users.length

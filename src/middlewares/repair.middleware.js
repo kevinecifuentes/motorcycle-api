@@ -45,7 +45,7 @@ exports.validatePendingAndCompletedRepair = async (req, res, next) => {
     if (!repair) {
       return res.status(404).json({
         status: 'fail',
-        message: 'user not found',
+        message: 'repair not found',
       })
     }
 

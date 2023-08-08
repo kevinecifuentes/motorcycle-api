@@ -39,7 +39,7 @@ exports.protect = async (req, res, next) => {
       })
     }
 
-    req.user = user
+    req.sessionUser = user
     next()
   } catch (error) {
     console.log(error)
@@ -49,5 +49,17 @@ exports.protect = async (req, res, next) => {
       message: 'something went wrong',
       error,
     })
+  }
+}
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.sessionUser.role)) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'you do not have permission to do that',
+      })
+    }
+    next()
   }
 }

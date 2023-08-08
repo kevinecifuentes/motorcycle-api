@@ -7,11 +7,15 @@ exports.findAllRepairs = async (req, res) => {
       where: {
         status: 'pending',
       },
+      attributes: {
+        exclude: ['password'],
+      },
     })
 
     res.status(200).json({
       status: 'succes',
-      message: 'users founds',
+      message: 'repair founds',
+      results: repairs.length,
       repairs,
     })
   } catch (error) {

@@ -7,11 +7,17 @@ const repairControllers = require('./../controllers/repair.controllers')
 //middlewares
 const repairMiddleware = require('../middlewares/repair.middleware')
 const validationMiddleware = require('./../middlewares/validation.middleware')
+const authMiddleware = require('./../middlewares/auth.middlewares')
+
+router.use(authMiddleware.protect)
 
 router
   .route('/')
-  .get(repairControllers.findAllRepairs)
   .post(validationMiddleware.repairValidation, repairControllers.createRepair)
+
+router.use(authMiddleware.restrictTo('employee'))
+
+router.get('/', repairControllers.findAllRepairs)
 
 router
   .route('/:id')
