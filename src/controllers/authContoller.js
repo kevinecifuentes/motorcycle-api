@@ -1,8 +1,9 @@
 const User = require('./../models/user.model')
 const bcrypt = require('bcryptjs')
 const generateJWT = require('./../utils/jwt')
+const AppError = require('../utils/appError')
 
-exports.signIn = async (req, res) => {
+exports.signIn = async (req, res, next) => {
   try {
     const { email, password } = req.body
 
@@ -13,12 +14,8 @@ exports.signIn = async (req, res) => {
       },
     })
 
-    if (!(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'email or password incorrect',
-      })
-    }
+    if (!(await bcrypt.compare(password, user.password)))
+      next(new AppError('Email or password incorrect', 401))
 
     const token = await generateJWT(user.id)
 

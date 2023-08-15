@@ -1,3 +1,4 @@
+const AppError = require('../utils/appError')
 const User = require('./../models/user.model')
 
 exports.validateUser = async (req, res, next) => {
@@ -9,13 +10,13 @@ exports.validateUser = async (req, res, next) => {
         id,
         status: 'available',
       },
+      attributes: {
+        exclude: ['password', 'createdAt', 'updatedAt', 'status'],
+      },
     })
 
     if (!user) {
-      return res.status(404).json({
-        status: 'error',
-        message: `User with id ${id} not found`,
-      })
+      return next(new AppError(`User with id: ${id} not found`, 404))
     }
 
     req.user = user

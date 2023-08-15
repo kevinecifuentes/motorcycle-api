@@ -1,3 +1,4 @@
+const AppError = require('../utils/appError')
 const Repair = require('./../models/repair.model')
 
 //validate only pending status
@@ -13,10 +14,7 @@ exports.validateRepair = async (req, res, next) => {
     })
 
     if (!repair) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'user not found',
-      })
+      return next(new AppError('Repair not found', 404))
     }
 
     req.repair = repair
@@ -43,10 +41,7 @@ exports.validatePendingAndCompletedRepair = async (req, res, next) => {
     })
 
     if (!repair) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'repair not found',
-      })
+      return next(new AppError(`Repair with id ${id} not found`, 404))
     }
 
     req.repair = repair

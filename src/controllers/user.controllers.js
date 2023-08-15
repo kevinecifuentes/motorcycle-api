@@ -23,6 +23,7 @@ exports.findAllUsers = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
@@ -94,14 +95,7 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { user } = req
-    const { name, email, role } = req.body
-
-    if (role) {
-      return res.status(400).json({
-        status: 'invalid',
-        message: 'role cannot be changed',
-      })
-    }
+    const { name, email } = req.body
 
     await user.update({ name, email })
 
@@ -112,11 +106,11 @@ exports.updateUser = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    const errorMessage = error.errors[0].message
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
-      errorMessage,
+      error,
     })
   }
 }
@@ -124,15 +118,13 @@ exports.updateUser = async (req, res) => {
 // Delete user
 exports.deleteUser = async (req, res) => {
   try {
-    const { name } = req.body
-    const { id } = req.params
     const { user } = req
 
     await user.update({ status: 'not available' })
 
     res.status(200).json({
       status: 'succes',
-      message: `user with name ${name} and id ${id} deleted`,
+      message: `user ${user.name} with id ${user.id} deleted`,
       user,
     })
   } catch (error) {

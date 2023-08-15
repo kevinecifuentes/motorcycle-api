@@ -10,7 +10,6 @@ const validationMiddleware = require('./../middlewares/validation.middleware')
 const authMiddleware = require('./../middlewares/auth.middlewares')
 
 router.use(authMiddleware.protect)
-
 router
   .route('/')
   .post(validationMiddleware.repairValidation, repairControllers.createRepair)

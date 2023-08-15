@@ -1,4 +1,5 @@
 const Repair = require('../models/repair.model')
+const User = require('../models/user.model')
 
 // find all pending repairs
 exports.findAllRepairs = async (req, res) => {
@@ -10,6 +11,12 @@ exports.findAllRepairs = async (req, res) => {
       attributes: {
         exclude: ['password'],
       },
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'email', 'role'],
+        },
+      ],
     })
 
     res.status(200).json({
@@ -20,6 +27,7 @@ exports.findAllRepairs = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
@@ -41,6 +49,7 @@ exports.findRepair = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
@@ -52,11 +61,12 @@ exports.findRepair = async (req, res) => {
 //create repair
 exports.createRepair = async (req, res) => {
   try {
-    const { date, userId, motorsNumber, description } = req.body
+    const { date, motorsNumber, description } = req.body
+    const { id } = req.sessionUser
 
     const repair = await Repair.create({
       date,
-      userId,
+      userId: id,
       motorsNumber,
       description,
     })
@@ -68,6 +78,7 @@ exports.createRepair = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
@@ -105,6 +116,7 @@ exports.updateRepair = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong!',
@@ -123,6 +135,7 @@ exports.deleteRepair = async (req, res) => {
         message: 'repair with status completed cannot be deleted',
       })
     }
+
     await repair.update({ status: 'cancelled' })
 
     res.status(200).json({
@@ -132,6 +145,7 @@ exports.deleteRepair = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+
     return res.status(500).json({
       status: 'fail',
       message: 'something went wrong',

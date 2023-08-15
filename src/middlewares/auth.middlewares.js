@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User = require('./../models/user.model')
 const { promisify } = require('util')
+const AppError = require('../utils/appError')
 
 exports.protect = async (req, res, next) => {
   try {
@@ -14,10 +15,9 @@ exports.protect = async (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'you are not login yet, please login and try again',
-      })
+      return next(
+        new AppError('you are not login yet, please login and try again', 401)
+      )
     }
 
     const decoded = await promisify(jwt.verify)(
@@ -52,13 +52,24 @@ exports.protect = async (req, res, next) => {
   }
 }
 
+exports.protectAccountOwner = (req, res, next) => {
+  const { user, sessionUser } = req
+
+  if (user.id !== sessionUser.id) {
+    return next(
+      new AppError(
+        'you are not the own of this account and cannot do that',
+        403
+      )
+    )
+  }
+  next()
+}
+
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.sessionUser.role)) {
-      return res.status(403).json({
-        status: 'error',
-        message: 'you do not have permission to do that',
-      })
+      return next(new AppError('you do not have permission to do that', 403))
     }
     next()
   }
