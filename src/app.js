@@ -1,11 +1,12 @@
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+const AppError = require('./utils/appError')
+const globalHanldeError = require('./utils/globalHandleError')
 
 //routes
 const userRoutes = require('./routes/user.route')
 const repairRoutes = require('./routes/repair.route')
-const AppError = require('./utils/appError')
 
 const app = express()
 
@@ -24,14 +25,6 @@ app.all('*', (req, res, next) => {
   )
 })
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500
-  err.status = err.status || 'fail'
-
-  return res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  })
-})
+app.use(globalHanldeError)
 
 module.exports = app

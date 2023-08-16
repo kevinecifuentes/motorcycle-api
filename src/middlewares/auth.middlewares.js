@@ -2,55 +2,46 @@ const jwt = require('jsonwebtoken')
 const User = require('./../models/user.model')
 const { promisify } = require('util')
 const AppError = require('../utils/appError')
+const catchAsync = require('../utils/catchAsync')
 
-exports.protect = async (req, res, next) => {
-  try {
-    let token
+exports.protect = catchAsync(async (req, res, next) => {
+  let token
 
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
-    ) {
-      token = req.headers.authorization.split(' ')[1]
-    }
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1]
+  }
 
-    if (!token) {
-      return next(
-        new AppError('you are not login yet, please login and try again', 401)
-      )
-    }
-
-    const decoded = await promisify(jwt.verify)(
-      token,
-      process.env.SECRET_JWT_SEED
+  if (!token) {
+    return next(
+      new AppError('you are not login yet, please login and try again', 401)
     )
+  }
 
-    const user = await User.findOne({
-      where: {
-        id: decoded.id,
-        status: 'available',
-      },
-    })
+  const decoded = await promisify(jwt.verify)(
+    token,
+    process.env.SECRET_JWT_SEED
+  )
 
-    if (!user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'the owner of this token is not available',
-      })
-    }
+  const user = await User.findOne({
+    where: {
+      id: decoded.id,
+      status: 'available',
+    },
+  })
 
-    req.sessionUser = user
-    next()
-  } catch (error) {
-    console.log(error)
-
-    return res.status(500).json({
+  if (!user) {
+    return res.status(401).json({
       status: 'error',
-      message: 'something went wrong',
-      error,
+      message: 'the owner of this token is not available',
     })
   }
-}
+
+  req.sessionUser = user
+  next()
+})
 
 exports.protectAccountOwner = (req, res, next) => {
   const { user, sessionUser } = req
